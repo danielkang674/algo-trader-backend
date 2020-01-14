@@ -1,11 +1,18 @@
-FROM ruby:2.7.0
+FROM ruby:2.7.0 AS base
+
+WORKDIR /backend
 
 RUN apt-get update -qq && apt-get install -y postgresql-client
-WORKDIR /backend
-COPY Gemfile /backend/Gemfile
-COPY Gemfile.lock /backend/Gemfile.lock
+
+COPY . .
+
 RUN bundle install
-COPY . /backend
+
+FROM base AS dev
+
+WORKDIR /backend
+
+COPY --from=base /backend /backend
 
 EXPOSE 3333
 
